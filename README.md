@@ -131,7 +131,7 @@ To verify the setup, we can use the PYNQ makefile:
     make checkenv BOARDS=AUP-ZU3
 ```
 
-## Building
+## Building - Subject to Change (Doesn't work yet!)
 
 To build the entire PYNQ SD Image, run the following from the root directory of the repo:
 
