@@ -1,5 +1,13 @@
 # Build instructions
 
+These build instructions were built and Tested on Ubuntu 24.04.4. Because the original build tools were made for Ubuntu 22.04, Docker will be used to set up a controlled and predictable environment.
+
+### You will need:
+
+- Docker
+- Vivado/Vitis 2024.1
+- PetaLinux Tools 2024.1
+
 ## Pulling the Repo
 At the location you wish to clone the repo, execute the following commands:
 
@@ -9,13 +17,13 @@ cd AUP-ZU3 && git submodule init && git submodule update
 ```
 ## Modifying the Dockerfile
 
-Once the submodule has been pulled, we need to set up the Docker image
+Once the submodule has been pulled, the Docker image needs to be set up
 
 ```bash
 cd pynq/sdbuild
 ```
 
-From this directory, we need to modify the existing Dockerfile
+From this directory, the existing Dockerfile needs to be modified
 
 Add `diffstat`, `lz4`, and `zstd` to the host packages section, as shown here:
 
@@ -28,7 +36,7 @@ libssl-dev kpartx dosfstools nfs-common zerofree u-boot-tools rpm2cpio \
 libsdl1.2-dev libpixman-1-dev libc6-dev chrpath socat zlib1g-dev unzip \
 rsync python3-pip gcc-multilib xterm net-tools ninja-build python3-testresources \
 libncurses5-dev libncursesw5-dev vim nano tmux zip dnsutils sudo binfmt-support \
-dbus-x11 libswt-glx-gtk-4-jni libgtk2.0-0 xvfb  diffstat \
+    dbus-x11 libswt-glx-gtk-4-jni libgtk2.0-0 xvfb  diffstat \
 ```
 
 Add `pyyaml` to the following line as shown:
@@ -51,7 +59,7 @@ docker build \
 
 ## Docker Automation
 
-Now that we have our Docker Image set up, we can automate things somewhat.
+Now that the Docker Image is set up, it can be somewhat automated.
 
 Return to the root directory of the repo:
 
@@ -69,7 +77,7 @@ docker run \
 --rm \
 -it \
 -v /tools/Xilinx:/tools/Xilinx:ro \
--v /home/user/Documents/SDKs/PetaLinux:/home/user/petalinux:ro \
+-v /home/user/Documents/SDKs/PetaLinux:/home/user/Documents/SDKs/PetaLinux:ro \
 -v $(pwd):/AUP-ZU3 \
 --name pynq-sdbuild-env \
 --privileged \
@@ -77,7 +85,7 @@ pynqdock:latest \
 /bin/bash
 ```
 
-Note: Replace `/tools/Xilinx` and `/home/user/Documents/SDKs/PetaLinux` with the actual locations of your Vivado/Vitis and PetaLinux installs. *(Ensure you have versions 2024.1 installed!)*
+Note: Replace `/tools/Xilinx` and `/home/user/Documents/SDKs/PetaLinux` with the actual locations of your Vivado/Vitis and PetaLinux installs. It is important that the Path to PetaLinux matches for both the host path and the container path, as PetaLinux Tools will reference the actual path. *(Ensure you have versions 2024.1 installed!)*
 
 Make the file executable
 
@@ -85,7 +93,7 @@ Make the file executable
 chmod +x start_docker.sh
 ```
 
-In order to ensure your Xilinx tools are easily available for the build toolchain, we can create another script. We will call this one `sourceEnv.sh`:
+In order to ensure Xilinx tools are easily available for the build toolchain, another script can be made. Title this one `sourceEnv.sh`:
 
 ```bash
 #!/usr/bin/env bash
@@ -94,7 +102,7 @@ source /tools/Xilinx/Vivado/2024.1/settings64.sh
 source /home/user/petalinux/settings.sh
 ```
 
-The path does not have to match your actual path, because these just need to match the paths in the container.
+These should include the actual paths to these resources as seen in the container.
 
 Make the script executable
 
@@ -104,15 +112,24 @@ chmod +x sourceEnv.sh
 
 ## Setting up the Filesystem and Distribution Binaries
 
-Next, we need to get the Prebuilt board-agnostic root filesystem, and prebuilt source distribution binaries. They can be found [here](https://www.pynq.io/boards.html). Be sure to choose aarch64 for the rootfs.
+Next, the Prebuilt board-agnostic root filesystem, and prebuilt source distribution binaries are needed. They can be found [here](https://www.pynq.io/boards.html). Be sure to choose aarch64 for the rootfs.
 
 In the repository, copy the archives to `pynq/sdbuild/prebuilt/` as:
 - `pynq/sdbuild/prebuilt/pynq_rootfs.aarch64.tar.gz` for the rootfs.
 - `pynq/sdbuild/prebuilt/pynq_sdist.tar.gz` for the source distribution binaries.
 
+## Allow Unprivleged Namespaces
+
+Some parts of the build process will fail if Unprivleged Namespaces are not allowed on the system. This can be addressed for the duration of the build with:
+
+```bash
+sudo sysctl -w kernel.unprivileged_userns_clone=1
+sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+```
+
 ## Verification
 
-Once we have the Filesystem and Distribution Binaries in place, we can enter our Docker Container. At the root directory of the repo:
+Once the Filesystem and Distribution Binaries are in place, enter the Docker Container. At the root directory of the repo:
 
 ```bash
 ./start_docker.sh
@@ -124,7 +141,9 @@ Once the Docker container has loaded, source your `sourceEnv.sh` script to ensur
 source sourceEnv.sh
 ```
 
-To verify the setup, we can use the PYNQ makefile:
+Note: as long as your container is Running Ubuntu 22.04, and you installed PetaLinux Tools 2024.1, you can safely ignore the `[WARNING] This is not a supported OS` message.
+
+To verify the setup, use the PYNQ makefile:
 
 ```bash
 cd pynq/sdbuild
