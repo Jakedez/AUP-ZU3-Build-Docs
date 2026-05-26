@@ -173,3 +173,24 @@ The AppArmor restriction can be disabled for the duration of the build with the 
 sudo sysctl -w kernel.unprivileged_userns_clone=1
 sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
 ```
+
+
+## "Unable to access 'https//github.com/...'
+
+### Problem
+
+Surprisingly, the problem was not actually with GitHub at all, rather, The [instructions](https://pynq.readthedocs.io/en/latest/pynq_sd_card.html) for setting up the build environment do not account for PetaLinux tools having a different installation path from the path within the container, as some of the installed config files point to the exact installed path.
+
+### Solution
+
+When mounting the location for PetaLinux tools inside the container, ensure that the path for the container matches the host path.
+
+
+
+## "Command bitbake zocl failed"
+
+### Problem
+
+### Solution
+
+
