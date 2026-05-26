@@ -2,6 +2,8 @@
 
 These build instructions were built and Tested on Ubuntu 24.04.4. Because the original build tools were made for Ubuntu 22.04, Docker will be used to set up a controlled and predictable environment.
 
+Many issues were encountered in the development of these instructions. You can find the documentation for those issues [here](./Problems_and_Solutions.md).
+
 ### You will need:
 
 - Docker
