@@ -47,6 +47,7 @@ RUN pip3 install --no-cache-dir --upgrade "setuptools>=24.2.0" numpy cffi pyyaml
 
 Near the end of the Dockerfile, replace `WORKDIR /workspace` with `WORKDIR /AUP-ZU3`. IT IS ESSENTIAL THAT THE DIRECTORY BE NAMED AUP-ZU3.
 
+
 You can now build the Docker Image:
 
 ```bash
@@ -99,6 +100,7 @@ In order to ensure Xilinx tools are easily available for the build toolchain, an
 #!/usr/bin/env bash
 
 source /tools/Xilinx/Vivado/2024.1/settings64.sh
+source /tools/Xilinx/Vitis/2024.1/settings64.sh
 source /home/user/petalinux/settings.sh
 ```
 
@@ -118,13 +120,19 @@ In the repository, copy the archives to `pynq/sdbuild/prebuilt/` as:
 - `pynq/sdbuild/prebuilt/pynq_rootfs.aarch64.tar.gz` for the rootfs.
 - `pynq/sdbuild/prebuilt/pynq_sdist.tar.gz` for the source distribution binaries.
 
-## Allow Unprivleged Namespaces
+## Modifications to Host
 
 Some parts of the build process will fail if Unprivleged Namespaces are not allowed on the system. This can be addressed for the duration of the build with:
 
 ```bash
 sudo sysctl -w kernel.unprivileged_userns_clone=1
 sudo sysctl -w kernel.apparmor_restrict_unprivileged_userns=0
+```
+
+Additionally QEMU emulation for the build will require these to be installed on your host system:
+
+```bash
+sudo apt-get install -y qemu-user-static binfmt-support
 ```
 
 ## Verification
