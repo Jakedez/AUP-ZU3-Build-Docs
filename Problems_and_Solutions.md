@@ -190,7 +190,6 @@ When mounting the location for PetaLinux tools inside the container, ensure that
 ## "Command bitbake zocl failed"
 
 ### Problem
-
+Because the paths used are cached earlier in the build, changing the petalinux paths later in the build can result in issues.
 ### Solution
-
-
+These can be addressed by restoring the previous path to petalinux tools (which must have parity between the host and the container)

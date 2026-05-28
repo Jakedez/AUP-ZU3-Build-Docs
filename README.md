@@ -8,7 +8,7 @@ Many issues were encountered in the development of these instructions. You can f
 
 - Docker
 - Vivado/Vitis 2024.1
-- PetaLinux Tools 2024.1
+- PetaLinux Tools 2024.1 (Must be installed under /home/user/petalinux)
 
 ## Pulling the Repo
 At the location you wish to clone the repo, execute the following commands:
@@ -27,6 +27,38 @@ cd pynq/sdbuild
 
 From this directory, the existing Dockerfile needs to be modified
 
+The Dockerfile contains the following section:
+
+```Dockerfile
+# Enable i386 architecture and install core dependencies
+RUN dpkg --add-architecture i386 \
+ # Install build and host packages
+ && apt-get install -y \
+    bc libtool-bin gperf bison flex texi2html texinfo help2man gawk libtool \
+    build-essential automake libglib2.0-dev libfdt-dev device-tree-compiler \
+    qemu-user-static binfmt-support multistrap git lib32z1 lib32stdc++6 \
+    libssl-dev kpartx dosfstools nfs-common zerofree u-boot-tools rpm2cpio \
+    libsdl1.2-dev libpixman-1-dev libc6-dev chrpath socat zlib1g-dev unzip \
+    rsync python3-pip gcc-multilib xterm net-tools ninja-build python3-testresources \
+    libncurses5-dev libncursesw5-dev vim nano tmux zip dnsutils sudo binfmt-support \
+    dbus-x11 libswt-glx-gtk-4-jni libgtk2.0-0 xvfb \
+ # Configures timezone interactively (2: Americas, 37: Central)
+ && echo -e '2\n37\n' | apt-get install -y lsb-core \
+ # Locale for Vivado
+ && locale-gen en_US.utf8 && update-locale \
+ # Clean up APT
+ && rm -rf /var/lib/apt/lists/*
+
+```
+
+Just before the ```# Clean up APT``` comment, the following can be added:
+
+```Dockerfile
+ # Change system default /bin/sh from dash to bash
+ && echo "dash dash/sh boolean false" | debconf-set-selections \
+ && dpkg-reconfigure --frontend noninteractive dash \
+```
+
 Add `diffstat`, `lz4`, and `zstd` to the host packages section, as shown here:
 
 ```Dockerfile
@@ -38,7 +70,7 @@ libssl-dev kpartx dosfstools nfs-common zerofree u-boot-tools rpm2cpio \
 libsdl1.2-dev libpixman-1-dev libc6-dev chrpath socat zlib1g-dev unzip \
 rsync python3-pip gcc-multilib xterm net-tools ninja-build python3-testresources \
 libncurses5-dev libncursesw5-dev vim nano tmux zip dnsutils sudo binfmt-support \
-    dbus-x11 libswt-glx-gtk-4-jni libgtk2.0-0 xvfb  diffstat \
+    dbus-x11 libswt-glx-gtk-4-jni libgtk2.0-0 xvfb  diffstat lz4 zstd \
 ```
 
 Add `pyyaml` to the following line as shown:
@@ -80,7 +112,7 @@ docker run \
 --rm \
 -it \
 -v /tools/Xilinx:/tools/Xilinx:ro \
--v /home/user/Documents/SDKs/PetaLinux:/home/user/Documents/SDKs/PetaLinux:ro \
+-v /home/user/petalinux:/home/user/petalinux:ro \
 -v $(pwd):/AUP-ZU3 \
 --name pynq-sdbuild-env \
 --privileged \
@@ -102,11 +134,17 @@ In order to ensure Xilinx tools are easily available for the build toolchain, an
 #!/usr/bin/env bash
 
 source /tools/Xilinx/Vivado/2024.1/settings64.sh
-source /tools/Xilinx/Vitis/2024.1/settings64.sh
 source /home/user/petalinux/settings.sh
 ```
 
 These should include the actual paths to these resources as seen in the container.
+
+Additionally, some environment variables should be included:
+
+```bash
+export MAKEFLAGS="--MAKECMDGOALS=image"
+export EXTRA_CMAKE_FLAGS="-DOpenCL_LIBRARY=/usr/lib/aarch64-linux-gnu/libOpenCL.so -DOpenCL_INCLUDE_DIR=/usr/include -DCURSES_LIBRARY=/usr/lib/aarch64-linux-gnu/libncurses.so -DCURSES_INCLUDE_PATH=/usr/include"
+```
 
 Make the script executable
 
@@ -151,13 +189,13 @@ Once the Docker container has loaded, source your `sourceEnv.sh` script to ensur
 source sourceEnv.sh
 ```
 
-Note: as long as your container is Running Ubuntu 22.04, and you installed PetaLinux Tools 2024.1, you can safely ignore the `[WARNING] This is not a supported OS` message.
+Note: as long as your container is Running Ubuntu 22.04, and you installed PetaLinux Tools 2024.1, you can safely ignore the `[WARNING] This is not a supported OS` message, if present.
 
 To verify the setup, use the PYNQ makefile:
 
 ```bash
 cd pynq/sdbuild
-make checkenv BOARDS=AUP-ZU3
+make checkenv REBUILD_PYNQ_ROOTFS=True BOARDS=AUP-ZU3
 ```
 
 ## Building - Subject to Change (Doesn't work yet!)
@@ -174,6 +212,8 @@ For the 8GB Variant:
 ```bash
 make image-8gb 2>&1 | tee build.log
 ```
+
+After a successful build, the image can be found in the AUP-ZU3/pynq/sdbuild/output/ directory.
 
 Or, to only build the base design:
 
