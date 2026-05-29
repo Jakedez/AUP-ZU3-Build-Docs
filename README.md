@@ -139,12 +139,12 @@ source /home/user/petalinux/settings.sh
 
 These should include the actual paths to these resources as seen in the container.
 
-Additionally, some environment variables should be included:
+<!-- Additionally, some environment variables should be included:
 
 ```bash
 export MAKEFLAGS="--MAKECMDGOALS=image"
 export EXTRA_CMAKE_FLAGS="-DOpenCL_LIBRARY=/usr/lib/aarch64-linux-gnu/libOpenCL.so -DOpenCL_INCLUDE_DIR=/usr/include -DCURSES_LIBRARY=/usr/lib/aarch64-linux-gnu/libncurses.so -DCURSES_INCLUDE_PATH=/usr/include"
-```
+``` -->
 
 Make the script executable
 

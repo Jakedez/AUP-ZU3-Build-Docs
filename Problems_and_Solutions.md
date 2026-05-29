@@ -193,3 +193,22 @@ When mounting the location for PetaLinux tools inside the container, ensure that
 Because the paths used are cached earlier in the build, changing the petalinux paths later in the build can result in issues.
 ### Solution
 These can be addressed by restoring the previous path to petalinux tools (which must have parity between the host and the container)
+
+
+## CMake Error: Could NOT find Curses (missing: CURSES_LIBRARY)
+
+### Problem
+As part of the build process, QEMU is used to emulate the aarch64 architecture for some parts. The Curses library cannot be located from within the environment.
+### Solution
+
+
+## Unable to start QEMU
+
+### Problem
+As part of the build process, QEMU is used to emulate the aarch64 architecture for some parts. The Host system may not have the necessary QEMU dependencies installed.
+### Solution
+QEMU is required to be installed on the host system:
+
+```bash
+sudo apt-get install -y qemu-user-static binfmt-support
+```
