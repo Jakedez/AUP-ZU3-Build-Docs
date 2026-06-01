@@ -92,15 +92,42 @@ docker build \
 -t pynqdock:latest .
 ```
 
+## QEMU Fix
+
+A few changes need to be made to the QEMU Configuration.
+
+Navigate to `pynq/sdbuild/packages/xrtlib/qemu.sh`.
+
+Navigate to the line that reads
+
+```bash
+apt -y install systemtap-sdt-dev cppcheck libdw-dev libelf-dev libudev-dev
+```
+
+Modify the line by adding `ocl-icd-opencl-dev` and `libncurses-dev` so it reads
+
+```bash
+apt -y install systemtap-sdt-dev cppcheck libdw-dev libelf-dev libudev-dev ocl-icd-opencl-dev libncurses-dev
+```
+
+Next, navigate to the line that reads
+
+```bash
+cmake ../src/
+```
+
+modify it so it reads
+
+```bash
+cmake -DCURSES_INCLUDE_PATH=/usr/include -DCURSES_LIBRARY=/usr/lib/aarch64-linux-gnu/libncursesw.so.6 -DOpenCL_INCLUDE_DIR=/usr/include -DOpenCL_LIBRARY=/usr/lib/aarch64-linux-gnu/libOpenCL.so ../src/
+```
+
 ## Docker Automation
 
 Now that the Docker Image is set up, it can be somewhat automated.
 
 Return to the root directory of the repo:
 
-```bash
-cd ../..
-```
 
 Create a new file called `start_docker.sh`, and insert the following contents:
 

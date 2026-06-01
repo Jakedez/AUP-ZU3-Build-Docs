@@ -212,3 +212,36 @@ QEMU is required to be installed on the host system:
 ```bash
 sudo apt-get install -y qemu-user-static binfmt-support
 ```
+
+## Build Fails on First attempt but succeeds on second or third attempt
+
+### Problem
+On a clean build the sandbox lacks the required headers and libraries to build XRT's sub-tools.
+### Solution
+By explicitly installing libraries and pointing cmake to them, the build can continue uninterrupted:
+
+Navigate to `pynq/sdbuild/packages/xrtlib/qemu.sh`.
+
+Navigate to the line that reads
+
+```bash
+apt -y install systemtap-sdt-dev cppcheck libdw-dev libelf-dev libudev-dev
+```
+
+Modify the line by adding `ocl-icd-opencl-dev` and `libncurses-dev` so it reads
+
+```bash
+apt -y install systemtap-sdt-dev cppcheck libdw-dev libelf-dev libudev-dev ocl-icd-opencl-dev libncurses-dev
+```
+
+Next, navigate to the line that reads
+
+```bash
+cmake ../src/
+```
+
+modify it so it reads
+
+```bash
+cmake -DCURSES_INCLUDE_PATH=/usr/include -DCURSES_LIBRARY=/usr/lib/aarch64-linux-gnu/libncursesw.so.6 -DOpenCL_INCLUDE_DIR=/usr/include -DOpenCL_LIBRARY=/usr/lib/aarch64-linux-gnu/libOpenCL.so ../src/
+```
