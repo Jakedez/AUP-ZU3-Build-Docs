@@ -8,7 +8,7 @@ Many issues were encountered in the development of these instructions. You can f
 
 - Docker
 - Vivado/Vitis 2024.1
-- PetaLinux Tools 2024.1 (Must be installed under /home/user/petalinux)
+- PetaLinux Tools 2024.1
 
 ## Pulling the Repo
 At the location you wish to clone the repo, execute the following commands:
