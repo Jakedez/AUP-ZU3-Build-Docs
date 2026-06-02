@@ -225,7 +225,7 @@ cd pynq/sdbuild
 make checkenv REBUILD_PYNQ_ROOTFS=True BOARDS=AUP-ZU3
 ```
 
-## Building - Subject to Change (Doesn't work yet!)
+## Building
 
 To build the entire PYNQ SD Image, run the following from the root directory of the repo:
 
