@@ -1,3 +1,5 @@
+*An Automated version of these instructions is in-development! You can find instructions to take advantage of it [here]().*
+
 # Build instructions
 
 These build instructions were built and Tested on Ubuntu 24.04.4. Because the original build tools were made for Ubuntu 22.04, Docker will be used to set up a controlled and predictable environment.
@@ -227,7 +229,7 @@ make checkenv REBUILD_PYNQ_ROOTFS=True BOARDS=AUP-ZU3
 
 ## Building
 
-To build the entire PYNQ SD Image, run the following from the root directory of the repo:
+To build the entire PYNQ SD Image, run the following from the root directory of the repo (still inside the container):
 
 For the 4GB Variant:
 

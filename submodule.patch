@@ -1,0 +1,62 @@
+diff --git a/sdbuild/Dockerfile b/sdbuild/Dockerfile
+index bcf37f7c..b9ca14ac 100644
+--- a/sdbuild/Dockerfile
++++ b/sdbuild/Dockerfile
+@@ -29,11 +29,14 @@ RUN dpkg --add-architecture i386 \
+     libsdl1.2-dev libpixman-1-dev libc6-dev chrpath socat zlib1g-dev unzip \
+     rsync python3-pip gcc-multilib xterm net-tools ninja-build python3-testresources \
+     libncurses5-dev libncursesw5-dev vim nano tmux zip dnsutils sudo binfmt-support \
+-    dbus-x11 libswt-glx-gtk-4-jni libgtk2.0-0 xvfb \
++    dbus-x11 libswt-glx-gtk-4-jni libgtk2.0-0 xvfb diffstat lz4 zstd \
+  # Configures timezone interactively (2: Americas, 37: Central)
+  && echo -e '2\n37\n' | apt-get install -y lsb-core \
+  # Locale for Vivado
+  && locale-gen en_US.utf8 && update-locale \
++ # Change system default /bin/sh from dash to bash
++ && echo "dash dash/sh boolean false" | debconf-set-selections \
++ && dpkg-reconfigure --frontend noninteractive dash \
+  # Clean up APT
+  && rm -rf /var/lib/apt/lists/*
+ 
+@@ -71,7 +74,7 @@ RUN mkdir -p /run/systemd/resolve \
+  && cp -L /etc/resolv.conf /run/systemd/resolve/stub-resolv.conf
+ 
+ # Update Python setuptools and install PYNQ Python deps
+-RUN pip3 install --no-cache-dir --upgrade "setuptools>=24.2.0" numpy cffi
++RUN pip3 install --no-cache-dir --upgrade "setuptools>=24.2.0" numpy cffi pyyaml
+ 
+ # Create a shared build directory
+ RUN mkdir /build && chmod a+rwx /build
+@@ -91,7 +94,7 @@ ENV LD_PRELOAD=/lib/x86_64-linux-gnu/libudev.so.1
+ 
+ # Switch to non-root user
+ USER ${USERNAME}
+-WORKDIR /workspace
++WORKDIR /AUP-ZU3
+ ENV USERNAME=${USERNAME}
+ 
+-CMD /bin/bash
+\ No newline at end of file
++CMD /bin/bash
+diff --git a/sdbuild/packages/xrtlib/qemu.sh b/sdbuild/packages/xrtlib/qemu.sh
+index 2af80cae..0beda8dd 100755
+--- a/sdbuild/packages/xrtlib/qemu.sh
++++ b/sdbuild/packages/xrtlib/qemu.sh
+@@ -49,7 +49,7 @@ manual_build()
+     cd /root
+ 
+     apt -y update
+-    apt -y install systemtap-sdt-dev cppcheck libdw-dev libelf-dev libudev-dev
++    apt -y install systemtap-sdt-dev cppcheck libdw-dev libelf-dev libudev-dev ocl-icd-opencl-dev libncurses-dev
+ 
+     git clone https://github.com/Xilinx/XRT xrt-git
+     cd xrt-git
+@@ -78,7 +78,7 @@ manual_build()
+     sed -i 's/xdp_hw_emu_pl_deadlock_plugin xdp_core xrt_coreutil xrt_hwemu/xdp_core xrt_coreutil/g' ./src/runtime_src/xdp/profile/plugin/pl_deadlock/CMakeLists.txt
+     sed -i 's/xdp_hw_emu_device_offload_plugin xdp_core xrt_coreutil xrt_hwemu/xdp_core xrt_coreutil/g' ./src/runtime_src/xdp/profile/plugin/device_offload/hw_emu/CMakeLists.txt
+     cd xclbinutil_build/
+-    cmake ../src/
++    cmake -DCURSES_INCLUDE_PATH=/usr/include -DCURSES_LIBRARY=/usr/lib/aarch64-linux-gnu/libncursesw.so.6 -DOpenCL_INCLUDE_DIR=/usr/include -DOpenCL_LIBRARY=/usr/lib/aarch64-linux-gnu/libOpenCL.so ../src/
+     make install -C runtime_src/tools/xclbinutil
+ 
+     # Get the path to the python3 executable
