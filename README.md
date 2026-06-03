@@ -1,4 +1,4 @@
-*An Automated version of these instructions is in-development! You can find instructions to take advantage of it [here]().*
+*An Automated version of these instructions is in-development! You can find instructions to take advantage of it [here](./Automated_Setup_Instructions.md).*
 
 # Build instructions
 
