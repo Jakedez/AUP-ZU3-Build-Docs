@@ -1,6 +1,6 @@
 # AUP-ZU3 Automated Build Instructions
 
-These instructions are aimed at simplifying the initalization  process for building the Pynq Linux image for the AUP-ZU3 board.
+These instructions are aimed at simplifying the initialization  process for building the Pynq Linux image for the AUP-ZU3 board.
 
 ## You will need:
 
@@ -38,20 +38,20 @@ Once the three files `initialize.sh`, `ver_1.patch`, and `submodule.patch` are i
 
 ### Configuring paths
 
-The Initialize script is designed to take up to 2 arguments. The first argument will replace the default path to PetaLinux Tools (`/home/user/petalinux`), the second argument will replace the default path to Xilinx Tools (`/tools/Xilinx`).
+The initialize script is designed to take up to 2 arguments. The first argument will replace the default path to PetaLinux Tools (`/home/user/petalinux`), the second argument will replace the default path to Xilinx Tools (`/tools/Xilinx`).
 
 This can be done by entering your own paths to PetaLinux Tools, and Xilinx Tools, omitting the `/` on the last directory.
 
 Example:
 
 ```bash
-./initialize.sh /path/to/petalinux
+./initialize.sh </path/to/petalinux>
 ```
 
 OR
 
 ```bash
-./initialize.sh /path/to/petalinux /path/to/Xilinx
+./initialize.sh </path/to/petalinux> </path/to/Xilinx>
 ```
 
 
