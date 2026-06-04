@@ -34,6 +34,26 @@ Once the three files `initialize.sh`, `ver_1.patch`, and `submodule.patch` are i
 - Builds the Docker image based on the `pynq/sdbuild/Dockerfile`
 - Downloads the prebuilt rootfs to `pynq/sdbuild/prebuilt/pynq_rootfs.aarch64.tar.gz`
 - Downloads the prebuilt source distribution to `pynq/sdbuild/prebuilt/pynq_sdist.tar.gz`
+- Replace path names to Xilinx Tools and PetaLinux Tools (If Necessary)
+
+### Configuring paths
+
+The Initialize script is designed to take up to 2 arguments. The first argument will replace the default path to PetaLinux Tools (`/home/user/petalinux`), the second argument will replace the default path to Xilinx Tools (`/tools/Xilinx`).
+
+This can be done by entering your own paths to PetaLinux Tools, and Xilinx Tools, omitting the `/` on the last directory.
+
+Example:
+
+```bash
+./initialize.sh /path/to/petalinux
+```
+
+OR
+
+```bash
+./initialize.sh /path/to/petalinux /path/to/Xilinx
+```
+
 
 ## Things to be done manually
 
@@ -54,14 +74,6 @@ QEMU requires the following dependencies to be installed:
 ```bash
 sudo apt-get install -y qemu-user-static binfmt-support
 ```
-
-### Modifying Paths
-
-The current automation process does not set up the proper paths for PetaLinux Tools, or Xilinx Tools (Vivado/Vitis). This must be done manually.
-
-Check in `sourceEnv.sh` and `start_docker.sh` and modify the paths for PetaLinux Tools and Xilinx Tools as needed to match your installation paths.
-
-NOTE: PetaLinux tools must use the same path name both inside and outside the container, as the PetaLinux Tools installation process hard-codes some path values based on your install location. For parity, the path should be the same as the host system.
 
 ### Sourcing and Verification must be done manually
 
