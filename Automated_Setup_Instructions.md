@@ -12,6 +12,7 @@ These instructions are aimed at simplifying the initialization  process for buil
 - Vivado/Vitis 2024.1
 - Docker
 - git
+- curl
 - qemu-user-static and binfmt-support
 - AppArmor Disabled
 
