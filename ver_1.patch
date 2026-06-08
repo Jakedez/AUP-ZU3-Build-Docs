@@ -13,13 +13,16 @@ new file mode 100755
 index 0000000..81bdf07
 --- /dev/null
 +++ b/start_docker.sh
-@@ -0,0 +1,13 @@
+@@ -0,0 +1,16 @@
 +#!/usr/bin/env bash
++xhost +local:docker
 +
 +docker run \
 +--init \
 +--rm \
 +-it \
++-e DISPLAY=$DISPLAY \
++-v /tmp/.X11-unix:/tmp/.X11-unix:ro \
 +-v /tools/Xilinx:/tools/Xilinx:ro \
 +-v /home/user/petalinux:/home/user/petalinux:ro \
 +-v $(pwd):/AUP-ZU3 \
